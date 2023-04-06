@@ -3,9 +3,7 @@ import { fetchCountries } from './js/fetchCountries';
 import debounce from 'lodash.debounce';
 import Notiflix from 'notiflix';
 
-function errorNotify() {
-  Notiflix.Notify.failure('Oops, there is no country with that name');
-}
+function errorNotify() {}
 
 const DEBOUNCE_DELAY = 300;
 const inputField = document.querySelector('#search-box');
@@ -15,28 +13,31 @@ const countryInfo = document.querySelector('.country-info');
 inputField.addEventListener('input', debounce(onInput, DEBOUNCE_DELAY));
 
 function onInput(e) {
+  e.preventDefault();
   let counrtyName = e.target.value.trim();
   fetchCountries(counrtyName)
-    .then(result => countryMagic(result))
-    .catch(error => {
-      console.error(error);
-    });
+    .then(result => {
+      clearMarkup();
+      countryMagic(result);
+    })
+    .catch(error =>
+      Notiflix.Notify.failure('Oops, there is no country with that name')
+    );
 }
 
 function countryMagic(countries) {
-  clearMarkup();
   if (countries.length > 10) {
     Notiflix.Notify.info(
       'Too many matches found. Please enter a more specific name.'
     );
   } else if (countries.length > 1 && countries.length <= 9) {
-    markupListMaker(countries);
+    markupList(countries);
   } else if (countries.length === 1) {
     markupCountryInfo(countries);
   }
 }
 
-function markupListMaker(countries) {
+function markupList(countries) {
   const markupList = countries
     .map(
       ({ name, flags }) =>
