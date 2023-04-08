@@ -3,8 +3,6 @@ import { fetchCountries } from './js/fetchCountries';
 import debounce from 'lodash.debounce';
 import Notiflix from 'notiflix';
 
-function errorNotify() {}
-
 const DEBOUNCE_DELAY = 300;
 const inputField = document.querySelector('#search-box');
 const listOfcountries = document.querySelector('.country-list');
@@ -15,6 +13,11 @@ inputField.addEventListener('input', debounce(onInput, DEBOUNCE_DELAY));
 function onInput(e) {
   e.preventDefault();
   let counrtyName = e.target.value.trim();
+  console.log(counrtyName);
+
+  if (counrtyName === '') {
+    return;
+  }
   fetchCountries(counrtyName)
     .then(result => {
       clearMarkup();
